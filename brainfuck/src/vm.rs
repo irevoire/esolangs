@@ -28,8 +28,12 @@ impl<'a> Vm<'a> {
             ',' => self.input(),
             '[' => self.jump_right(),
             ']' => self.jump_left(),
-            _ => (), // comment
+            _ => self.instruction_pointer += 1, // comment
         }
+    }
+
+    pub fn finished(&self) -> bool {
+        self.instruction_pointer >= self.instructions.len()
     }
 
     /// Move the memory pointer to the right
@@ -46,13 +50,15 @@ impl<'a> Vm<'a> {
 
     /// Increment the memory cell under the memory pointer
     fn increment(&mut self) {
-        self.tape[self.memory_pointer] += 1;
+        let v = &mut self.tape[self.memory_pointer];
+        *v = v.wrapping_add(1);
         self.instruction_pointer += 1;
     }
 
     /// Decrement the memory cell under the memory pointer
     fn decrement(&mut self) {
-        self.tape[self.memory_pointer] -= 1;
+        let v = &mut self.tape[self.memory_pointer];
+        *v = v.wrapping_sub(1);
         self.instruction_pointer += 1;
     }
 
