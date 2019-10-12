@@ -74,8 +74,10 @@ impl<'a> Vm<'a> {
     }
 
     /// Input a character and store it in the cell at the memory pointer
+    /// **Here we decide to send 0 to the brainfuck program when we get EOF**
     fn input(&mut self) {
-        self.tape[self.memory_pointer] = std::io::stdin().bytes().next().unwrap().unwrap() as i8;
+        self.tape[self.memory_pointer] =
+            std::io::stdin().bytes().next().unwrap_or(Ok(0)).unwrap() as i8;
         self.instruction_pointer += 1;
     }
 
