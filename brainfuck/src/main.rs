@@ -21,7 +21,7 @@ fn main() {
 
     let buffer = buffer.iter().map(|&a| a as char).collect::<Vec<char>>();
     let mut vm = vm::Vm::new(&buffer);
-    loop {
+    while !vm.finished() {
         vm.cycle();
     }
 }
