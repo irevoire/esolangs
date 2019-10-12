@@ -1,2 +1,2 @@
 [workspace]
-members = ["brainfuck"]
+members = ["brainfuck", ".Gertrude"]
