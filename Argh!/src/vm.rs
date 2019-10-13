@@ -157,7 +157,6 @@ impl Vm {
 
     /// end program execution
     fn quit(&mut self) {
-        println!("Execution finished!");
         std::process::exit(0);
     }
 
