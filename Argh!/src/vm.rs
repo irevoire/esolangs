@@ -20,6 +20,10 @@ impl Coord {
     pub fn new() -> Self {
         Coord { x: 0, y: 0 }
     }
+
+    pub fn start(&self) -> bool {
+        self.x == self.y && self.x == 0
+    }
 }
 
 /// we are defining addition between a coordinate and a direction
@@ -106,6 +110,9 @@ impl Vm {
             'G' => self.read(Up),   // get
             'e' => self.eof(Down),
             'E' => self.eof(Up),
+
+            // miscellaneous
+            '#' => self.sha_bang(),
 
             _ => (),
         }
@@ -214,5 +221,24 @@ impl Vm {
     /// insert value of system EOF in selected cell
     fn eof(&mut self, dir: Direction) {
         self.grid[self.ptr + dir] = 0; // EOF
+    }
+
+    /// behaves just like 'j', but only if its position in the code/data
+    /// array is 0,0 (the left/top corner) and only if there is a '!' in
+    /// the cell on its right side.
+    /// The '#' instruction was introduced to make Argh! programs executable
+    /// by puting "#!/path/to/argh" in the first line on systems which
+    /// know this kind of magic.
+    /// Anyway '#' is a valid, though undocumented, instruction and the
+    /// sha-bang (#!) line becomes part of the code/data array, so any
+    /// Argh!-implementation must understand '#'
+    fn sha_bang(&mut self) {
+        if !self.ptr.start() {
+            return;
+        }
+        // the file start by a #
+        if self.grid[self.ptr + Right] as u8 == '!' as u8 {
+            self.dir = Down;
+        }
     }
 }
