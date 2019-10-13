@@ -116,7 +116,7 @@ impl Vm {
     /// matches the value on top of the stack, and set execution direction to
     /// the specified direction
     fn jump(&mut self, dir: Direction) {
-        self.ptr += dir; // or maybe we should do this later? not sure...
+        self.dir = dir;
 
         if let Some(&val) = self.stack.last() {
             while self.grid[self.ptr] != val {
