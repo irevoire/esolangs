@@ -25,12 +25,20 @@ impl Grid {
 impl std::ops::Index<crate::vm::Coord> for Grid {
     type Output = i32;
     fn index(&self, i: crate::vm::Coord) -> &Self::Output {
+        if i.y >= self.vec.len() || i.x >= self.vec[i.y].len() {
+            println!("Argh!");
+            std::process::exit(-1);
+        }
         &self.vec[i.y][i.x]
     }
 }
 
 impl std::ops::IndexMut<crate::vm::Coord> for Grid {
     fn index_mut(&mut self, i: crate::vm::Coord) -> &mut Self::Output {
+        if i.y >= self.vec.len() || i.x >= self.vec[i.y].len() {
+            println!("Argh!");
+            std::process::exit(-1);
+        }
         &mut self.vec[i.y][i.x]
     }
 }
