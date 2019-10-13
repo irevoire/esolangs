@@ -11,7 +11,8 @@ impl Grid {
         for line in reader.lines() {
             let line = line.unwrap();
             grid.push(
-                line.chars()
+                line.trim_end()
+                    .chars()
                     .chain(std::iter::repeat(' '))
                     .take(80)
                     .map(|c| c as i32)
