@@ -1,6 +1,6 @@
 use std::io::Read;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 enum Direction {
     Left,
     Down,
@@ -88,9 +88,9 @@ impl Vm {
 
     pub fn cycle(&mut self) {
         let op = self.grid[self.ptr];
-        // println!("op: {}", op as u8 as char);
-        // println!("coord: {}, {}", self.ptr.x, self.ptr.y);
         // println!("stack: {:?}", self.stack);
+        // println!("op: {}", op as u8 as char);
+        // println!("coord: {}, {}\n", self.ptr.x, self.ptr.y);
         match op as u8 as char {
             // flow control
             '>' => self.dir = Right,
@@ -129,7 +129,28 @@ impl Vm {
 
             _ => (),
         }
-        self.ptr += self.dir; // move to the next instruction
+        self.step();
+    }
+
+    /// move to the current direction
+    /// when you are going out of the grid yuow rap to the other side of the grid
+    fn step(&mut self) {
+        self.ptr = match (self.ptr, self.dir) {
+            (Coord { x: 0, y }, Left) => Coord { x: 79, y },
+            (Coord { x: 79, y }, Right) => Coord { x: 0, y },
+            (Coord { x, y: 0 }, Up) => Coord {
+                x,
+                y: self.grid.len() - 1,
+            },
+            (ptr, dir) => {
+                // we can’t do this at compile time in the match
+                if dir == Down && ptr.y == self.grid.len() - 1 {
+                    Coord { x: ptr.x, y: 0 }
+                } else {
+                    ptr + dir
+                }
+            }
+        }
     }
 
     /// end program execution
@@ -160,13 +181,13 @@ impl Vm {
         self.ptr += self.dir;
         while self.grid[self.ptr] != '"' as i32 {
             self.stack.push(self.grid[self.ptr]);
-            self.ptr += self.dir;
+            self.step();
         }
     }
 
     /// Bridge: Skip next cell
     fn bridge(&mut self) {
-        self.ptr += self.dir;
+        self.step();
     }
 
     /// duplicate top value on stack
@@ -253,8 +274,8 @@ impl Vm {
             println!("Not enough element in the stack");
             std::process::exit(0);
         }
-        let x = self.stack.pop().unwrap();
         let y = self.stack.pop().unwrap();
+        let x = self.stack.pop().unwrap();
         let v = self.stack.pop().unwrap();
 
         self.grid[Coord::from(x as usize, y as usize)] = v;
@@ -263,12 +284,8 @@ impl Vm {
     /// A "get" call (a way to retrieve data in storage). Pop y and x, then
     /// push ASCII value of the character at that position in the program
     fn get(&mut self) {
-        if self.stack.len() < 2 {
-            println!("Not enough element in the stack");
-            std::process::exit(0);
-        }
-        let x = self.stack.pop().unwrap();
-        let y = self.stack.pop().unwrap();
+        let y = self.stack.pop().unwrap_or(0);
+        let x = self.stack.pop().unwrap_or(0);
 
         self.stack
             .push(self.grid[Coord::from(x as usize, y as usize)]);

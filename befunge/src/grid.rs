@@ -21,6 +21,10 @@ impl Grid {
         }
         Grid { vec: grid }
     }
+
+    pub fn len(&self) -> usize {
+        self.vec.len()
+    }
 }
 
 impl std::ops::Index<crate::vm::Coord> for Grid {
