@@ -1,2 +1,2 @@
 [workspace]
-members = ["brainfuck", "Argh!"]
+members = ["brainfuck", "Argh!", "befunge"]
