@@ -6,6 +6,7 @@ This repository provides interpretor for some common esoterics language.
 Right now there is an implementation for:
 - [Brainfuck](./brainfuck)
 - [Argh!](./Argh!)
+- [Befunge](./befunge)
 
 
 Testing the code
